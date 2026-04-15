@@ -3,37 +3,42 @@ const Note = require("../models/Note");
 const { auth } = require("../middleware/auth");
 const { noteSchema } = require("../utils/validation");
 
-// Create note
+// CREATE
 router.post("/", auth, async (req, res) => {
-  try {
-    const { error } = noteSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ msg: error.details[0].message });
-    }
+  const { error } = noteSchema.validate(req.body);
+  if (error) return res.status(400).json(error.details);
 
-    const { title, content, tags } = req.body;
+  const note = await Note.create({
+    ...req.body,
+    userId: req.user.id
+  });
 
-    const note = await Note.create({
-      title,
-      content,
-      tags,
-      userId: req.user.id
-    });
-
-    res.status(201).json(note);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
+  res.json(note);
 });
 
-// Get user notes
+// READ
 router.get("/", auth, async (req, res) => {
-  try {
-    const notes = await Note.find({ userId: req.user.id });
-    res.json(notes);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
+  const notes = await Note.find({ userId: req.user.id });
+  res.json(notes);
+});
+
+// UPDATE
+router.put("/:id", auth, async (req, res) => {
+  const note = await Note.findOneAndUpdate(
+    { _id: req.params.id, userId: req.user.id },
+    req.body,
+    { new: true }
+  );
+  res.json(note);
+});
+
+// DELETE
+router.delete("/:id", auth, async (req, res) => {
+  await Note.findOneAndDelete({
+    _id: req.params.id,
+    userId: req.user.id
+  });
+  res.json({ msg: "Note deleted" });
 });
 
 module.exports = router;

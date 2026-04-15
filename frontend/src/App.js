@@ -42,7 +42,7 @@ function App() {
       setMessage(err.response?.data?.msg || "Login failed");
     }
   };
-
+//CREATE
   const addNote = async () => {
     try {
       await axios.post(
@@ -51,11 +51,12 @@ function App() {
         { headers: { authorization: token } }
       );
       setMessage("Note added");
+      getNotes();
     } catch (err) {
       setMessage(err.response?.data?.msg || "Failed to add note");
     }
   };
-
+//READ
   const getNotes = async () => {
     try {
       const res = await axios.get(`${API}/api/v1/notes`, {
@@ -64,6 +65,34 @@ function App() {
       setNotes(res.data);
     } catch (err) {
       setMessage(err.response?.data?.msg || "Failed to load notes");
+    }
+  };
+
+  //  DELETE
+  const deleteNote = async (id) => {
+    try {
+      await axios.delete(`${API}/api/v1/notes/${id}`, {
+        headers: { authorization: token }
+      });
+      setMessage("Note deleted");
+      getNotes();
+    } catch {
+      setMessage("Delete failed");
+    }
+  };
+
+  //  UPDATE
+  const updateNote = async (id) => {
+    try {
+      await axios.put(
+        `${API}/api/v1/notes/${id}`,
+        { title: "Updated Note" },
+        { headers: { authorization: token } }
+      );
+      setMessage("Note updated");
+      getNotes();
+    } catch {
+      setMessage("Update failed");
     }
   };
 
@@ -110,7 +139,21 @@ function App() {
       <div>
         {notes.map((n) => (
           <div key={n._id} style={noteStyle}>
-            {n.title}
+            <p>{n.title}</p>
+
+            <button
+              style={{ ...buttonStyle, backgroundColor: "#d9534f" }}
+              onClick={() => deleteNote(n._id)}
+            >
+              Delete
+            </button>
+
+            <button
+              style={{ ...buttonStyle, backgroundColor: "#0275d8" }}
+              onClick={() => updateNote(n._id)}
+            >
+              Update
+            </button>
           </div>
         ))}
       </div>
