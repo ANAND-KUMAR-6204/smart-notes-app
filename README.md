@@ -5,7 +5,7 @@ A full-stack Smart Notes application built using the MERN stack with authenticat
 ---
 
 ## 🌐 Live Demo
-👉 https://smart-notes-podfg7bh-anand-kumar-6204s-projects.vercel.app
+👉 https://smart-notes-podfg7bfh-anand-kumar-6204s-projects.vercel.app/
 
 ---
 
